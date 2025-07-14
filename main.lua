@@ -14,7 +14,7 @@ local version = Instance.new("TextLabel")
 local UIAspectRatioConstraint_3 = Instance.new("UIAspectRatioConstraint")
 local notification = Instance.new("Frame")
 local UICorner_5 = Instance.new("UICorner")
-local text = Instance.new("TextLabel")	
+local text = Instance.new("TextLabel")
 
 PrototypeUI.Name = "PrototypeUI"
 PrototypeUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -147,7 +147,9 @@ text.TextWrapped = true
 
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local notifText = "Prism Has Executed Successfully"
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local CameraMode = player.CameraMode
 
 local close = top:WaitForChild("close")
 local minimize = top:WaitForChild("minimize")
@@ -168,30 +170,16 @@ minimize.MouseButton1Down:Connect(function() tweenColor(minimize, Color3.fromRGB
 minimize.MouseButton1Up:Connect(function() tweenColor(minimize, Color3.fromRGB(170, 170, 0)) end)
 
 local dragging = false
-local dragInput
-local dragStart
-local startPos
+local dragStart, startPos
 
 local function tweenPosition(targetPos)
-	TweenService:Create(
-		back,
-		TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		{Position = targetPos}
-	):Play()
+	TweenService:Create(back, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = targetPos}):Play()
 end
-
-local dragging = false
-local dragStart, startPos
 
 local function updateDrag(input)
 	if dragging then
 		local delta = input.Position - dragStart
-		local newPos = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
-		)
+		local newPos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		tweenPosition(newPos)
 	end
 end
@@ -201,11 +189,12 @@ top.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPos = back.Position
-
+		player.CameraMode = Enum.CameraMode.LockFirstPerson
 		local conn
 		conn = input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				dragging = false
+				player.CameraMode = CameraMode
 				conn:Disconnect()
 			end
 		end)
