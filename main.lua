@@ -14,7 +14,7 @@ local version = Instance.new("TextLabel")
 local UIAspectRatioConstraint_3 = Instance.new("UIAspectRatioConstraint")
 local notification = Instance.new("Frame")
 local UICorner_5 = Instance.new("UICorner")
-local text = Instance.new("TextLabel")
+local text = Instance.new("TextLabel")	
 
 PrototypeUI.Name = "PrototypeUI"
 PrototypeUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
@@ -180,39 +180,40 @@ local function tweenPosition(targetPos)
 	):Play()
 end
 
-local function update(input)
-	local delta = input.Position - dragStart
-	local newPos = UDim2.new(
-		startPos.X.Scale,
-		startPos.X.Offset + delta.X,
-		startPos.Y.Scale,
-		startPos.Y.Offset + delta.Y
-	)
-	tweenPosition(newPos)
+local dragging = false
+local dragStart, startPos
+
+local function updateDrag(input)
+	if dragging then
+		local delta = input.Position - dragStart
+		local newPos = UDim2.new(
+			startPos.X.Scale,
+			startPos.X.Offset + delta.X,
+			startPos.Y.Scale,
+			startPos.Y.Offset + delta.Y
+		)
+		tweenPosition(newPos)
+	end
 end
 
 top.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 		dragging = true
 		dragStart = input.Position
 		startPos = back.Position
 
-		input.Changed:Connect(function()
+		local conn
+		conn = input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				dragging = false
+				conn:Disconnect()
 			end
 		end)
 	end
 end)
 
-top.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement then
-		dragInput = input
-	end
-end)
-
 UserInputService.InputChanged:Connect(function(input)
-	if dragging and input == dragInput then
-		update(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		updateDrag(input)
 	end
 end)
