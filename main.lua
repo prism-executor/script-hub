@@ -168,9 +168,9 @@ minimize.MouseEnter:Connect(function() tweenColor(minimize, Color3.fromRGB(170, 
 minimize.MouseLeave:Connect(function() tweenColor(minimize, Color3.fromRGB(130, 130, 0)) end)
 minimize.MouseButton1Down:Connect(function() tweenColor(minimize, Color3.fromRGB(255, 255, 0)) end)
 minimize.MouseButton1Up:Connect(function() tweenColor(minimize, Color3.fromRGB(170, 170, 0)) end)
-
 local dragging = false
 local dragStart, startPos
+local ControlModule = require(game.Players.LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")):GetControls()
 
 local function tweenPosition(targetPos)
 	TweenService:Create(back, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Position = targetPos}):Play()
@@ -189,12 +189,12 @@ top.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPos = back.Position
-		UserInputService.ModalEnabled = true
+		ControlModule:Disable()
 		local conn
 		conn = input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				dragging = false
-				UserInputService.ModalEnabled = false
+				ControlModule:Enable()
 				conn:Disconnect()
 			end
 		end)
@@ -206,3 +206,4 @@ UserInputService.InputChanged:Connect(function(input)
 		updateDrag(input)
 	end
 end)
+
