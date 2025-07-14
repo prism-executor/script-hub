@@ -185,16 +185,16 @@ local function updateDrag(input)
 end
 
 top.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
 		dragging = true
 		dragStart = input.Position
 		startPos = back.Position
-		player.CameraMode = Enum.CameraMode.LockFirstPerson
+		UserInputService.ModalEnabled = true
 		local conn
 		conn = input.Changed:Connect(function()
 			if input.UserInputState == Enum.UserInputState.End then
 				dragging = false
-				player.CameraMode = CameraMode
+				UserInputService.ModalEnabled = false
 				conn:Disconnect()
 			end
 		end)
@@ -202,7 +202,7 @@ top.InputBegan:Connect(function(input)
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement then
 		updateDrag(input)
 	end
 end)
